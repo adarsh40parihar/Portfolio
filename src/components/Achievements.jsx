@@ -193,7 +193,7 @@ const Achievements = () => {
               </div>
               <div className="text-center p-6 bg-white/50 dark:bg-navy-800/50 rounded-xl">
                 <div className="text-4xl font-bold gradient-text mb-2">
-                  1886
+                  1855
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   LeetCode Rating
@@ -204,7 +204,7 @@ const Achievements = () => {
               </div>
               <div className="text-center p-6 bg-white/50 dark:bg-navy-800/50 rounded-xl">
                 <div className="text-4xl font-bold gradient-text mb-2">
-                  1838
+                  1839
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   CodeChef Rating
