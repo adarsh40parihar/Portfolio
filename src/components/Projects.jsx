@@ -1,17 +1,79 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   FaGithub,
   FaExternalLinkAlt,
   FaChevronLeft,
   FaChevronRight,
+  FaTimes,
 } from "react-icons/fa";
 
-const Projects = () => {
+const Projects = ({ onLightboxChange }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const [currentImageIndex, setCurrentImageIndex] = useState({});
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState(null);
+  const [lightboxProjectIndex, setLightboxProjectIndex] = useState(null);
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.style.overflow = "hidden";
+      onLightboxChange?.(true); // Notify parent
+    } else {
+      document.body.style.overflow = "unset";
+      onLightboxChange?.(false); // Notify parent
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [lightboxOpen, onLightboxChange]);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && lightboxOpen) {
+        setLightboxOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [lightboxOpen]);
+
+  const openLightbox = (image, projectIndex) => {
+    setLightboxImage(image);
+    setLightboxProjectIndex(projectIndex);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    setLightboxImage(null);
+    setLightboxProjectIndex(null);
+  };
+
+  const navigateLightbox = (direction) => {
+    if (lightboxProjectIndex === null) return;
+    const project = projects[lightboxProjectIndex];
+    if (!project.images) return;
+
+    const currentIdx = currentImageIndex[lightboxProjectIndex] || 0;
+    let newIdx;
+
+    if (direction === "next") {
+      newIdx = (currentIdx + 1) % project.images.length;
+    } else {
+      newIdx = (currentIdx - 1 + project.images.length) % project.images.length;
+    }
+
+    setCurrentImageIndex((prev) => ({
+      ...prev,
+      [lightboxProjectIndex]: newIdx,
+    }));
+    setLightboxImage(project.images[newIdx]);
+  };
 
   const projects = [
     {
@@ -145,23 +207,38 @@ const Projects = () => {
 
                 {/* Project Images Carousel */}
                 {project.images && project.images.length > 0 && (
-                  <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-navy-900 dark:to-navy-800 overflow-hidden">
-                    <img
+                  <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-navy-900 dark:to-navy-800 overflow-hidden group/image flex items-center justify-center">
+                    <motion.img
+                      key={currentImageIndex[index] || 0}
                       src={project.images[currentImageIndex[index] || 0]}
                       alt={`${project.title} screenshot ${
                         (currentImageIndex[index] || 0) + 1
                       }`}
-                      className="w-full h-full object-cover"
+                      className="max-w-full max-h-full object-contain cursor-zoom-in"
+                      initial={{ scale: 1 }}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 20,
+                      }}
+                      onClick={() =>
+                        openLightbox(
+                          project.images[currentImageIndex[index] || 0],
+                          index
+                        )
+                      }
                       onError={(e) => {
                         e.target.style.display = "none";
                       }}
                     />
 
-                    {/* Image Navigation */}
+                    {/* Image Navigation - More visible on hover */}
                     {project.images.length > 1 && (
                       <>
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setCurrentImageIndex((prev) => ({
                               ...prev,
                               [index]:
@@ -171,13 +248,14 @@ const Projects = () => {
                                 project.images.length,
                             }));
                           }}
-                          className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all"
+                          className="absolute left-2 top-1/2 -translate-y-1/2 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full transition-all opacity-0 group-hover/image:opacity-100 hover:scale-110 z-10"
                           aria-label="Previous image"
                         >
-                          <FaChevronLeft className="w-4 h-4" />
+                          <FaChevronLeft className="w-5 h-5" />
                         </button>
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setCurrentImageIndex((prev) => ({
                               ...prev,
                               [index]:
@@ -185,34 +263,48 @@ const Projects = () => {
                                 project.images.length,
                             }));
                           }}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full transition-all opacity-0 group-hover/image:opacity-100 hover:scale-110 z-10"
                           aria-label="Next image"
                         >
-                          <FaChevronRight className="w-4 h-4" />
+                          <FaChevronRight className="w-5 h-5" />
                         </button>
 
-                        {/* Image indicators */}
-                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+                        {/* Image indicators - More prominent */}
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                           {project.images.map((_, imgIndex) => (
                             <button
                               key={imgIndex}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setCurrentImageIndex((prev) => ({
                                   ...prev,
                                   [index]: imgIndex,
                                 }));
                               }}
-                              className={`w-2 h-2 rounded-full transition-all ${
+                              className={`h-2 rounded-full transition-all ${
                                 (currentImageIndex[index] || 0) === imgIndex
-                                  ? "bg-white w-6"
-                                  : "bg-white/50 hover:bg-white/75"
+                                  ? "bg-white w-8 shadow-lg"
+                                  : "bg-white/60 w-2 hover:bg-white/90 hover:w-4"
                               }`}
                               aria-label={`Go to image ${imgIndex + 1}`}
                             />
                           ))}
                         </div>
+
+                        {/* Image counter overlay */}
+                        <div className="absolute top-3 right-3 px-3 py-1 bg-black/70 text-white text-xs font-semibold rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity">
+                          {(currentImageIndex[index] || 0) + 1} /{" "}
+                          {project.images.length}
+                        </div>
                       </>
                     )}
+
+                    {/* Zoom hint overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="px-4 py-2 bg-black/70 text-white text-sm font-medium rounded-lg opacity-0 group-hover/image:opacity-100 transition-opacity transform scale-90 group-hover/image:scale-100">
+                        🔍 Click to view full screen
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -273,6 +365,84 @@ const Projects = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Full Screen Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={closeLightbox}
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white rounded-full transition-all hover:scale-110 hover:rotate-90 z-[10000] shadow-lg border border-white/30"
+              aria-label="Close"
+            >
+              <FaTimes className="w-5 h-5" />
+            </button>
+
+            {/* Image Container */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative max-w-5xl max-h-[80vh] w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={lightboxImage}
+                alt="Full screen view"
+                className="w-full h-full object-contain rounded-lg shadow-2xl"
+              />
+
+              {/* Navigation Buttons for Multiple Images */}
+              {lightboxProjectIndex !== null &&
+                projects[lightboxProjectIndex].images &&
+                projects[lightboxProjectIndex].images.length > 1 && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigateLightbox("prev");
+                      }}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all hover:scale-110"
+                      aria-label="Previous image"
+                    >
+                      <FaChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigateLightbox("next");
+                      }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all hover:scale-110"
+                      aria-label="Next image"
+                    >
+                      <FaChevronRight className="w-6 h-6" />
+                    </button>
+
+                    {/* Image Counter */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/70 text-white text-sm font-semibold rounded-full">
+                      {(currentImageIndex[lightboxProjectIndex] || 0) + 1} /{" "}
+                      {projects[lightboxProjectIndex].images.length}
+                    </div>
+                  </>
+                )}
+            </motion.div>
+
+            {/* Instructions */}
+            <div className="absolute bottom-4 right-4 text-white/60 text-sm">
+              Press <kbd className="px-2 py-1 bg-white/10 rounded">ESC</kbd> to
+              close
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

@@ -13,6 +13,7 @@ import ParticlesBackground from "./components/ParticlesBackground";
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   useEffect(() => {
     if (darkMode) {
@@ -30,13 +31,15 @@ function App() {
     <div className={`${darkMode ? "dark" : ""}`}>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-navy-950 dark:via-navy-900 dark:to-navy-800 text-gray-900 dark:text-gray-100 transition-colors duration-300">
         <ParticlesBackground />
-        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        {!isLightboxOpen && (
+          <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        )}
         <Hero />
         <About />
         <Experience />
         <Skills />
         <CodingProfiles />
-        <Projects />
+        <Projects onLightboxChange={setIsLightboxOpen} />
         <Achievements />
         <Contact />
         <Footer />
