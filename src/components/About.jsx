@@ -1,10 +1,29 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const About = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const [imgError, setImgError] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const imageRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    if (!imageRef.current) return;
+    const rect = imageRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -10; // -10 to 10 degrees
+    const rotateY = ((x - centerX) / centerX) * 10; // -10 to 10 degrees
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -102,11 +121,31 @@ const About = () => {
               variants={itemVariants}
               className="order-1 md:order-2 flex justify-center"
             >
-              <div className="relative">
+              <div
+                ref={imageRef}
+                className="relative cursor-pointer"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                  transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                  transition: "transform 0.1s ease-out",
+                }}
+              >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl blur-xl opacity-50 animate-glow"></div>
                 <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 p-1">
                   <div className="w-full h-full rounded-2xl bg-navy-800 flex items-center justify-center">
-                    <div className="text-8xl">👨‍💻</div>
+                    {/* Profile image: drop your real photo as /public/profile.jpg.
+                        If the image fails to load, we fall back to the emoji. */}
+                    {!imgError ? (
+                      <img
+                        src="/profile.jpg"
+                        alt="Adarsh — profile"
+                        className="w-full h-full object-cover rounded-2xl"
+                        onError={() => setImgError(true)}
+                      />
+                    ) : (
+                      <div className="text-8xl">👨‍💻</div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -93,7 +93,14 @@ const Projects = ({ onLightboxChange }) => {
       github: "https://github.com/adarsh40parihar",
       demo: null,
       gradient: "from-pink-500 to-rose-500",
-      images: ["/projects/cinehub-1.png", "/projects/cinehub-2.png"],
+      images: [
+        "/projects/cinehub-1.png",
+        "/projects/cinehub-2.png",
+        "/projects/cinehub-3.png",
+        "/projects/cinehub-4.png",
+        "/projects/cinehub-5.png",
+        "/projects/cinehub-6.png",
+      ],
     },
     {
       title: "TempShell",
@@ -107,6 +114,7 @@ const Projects = ({ onLightboxChange }) => {
         "/projects/Tempshell-1.png",
         "/projects/Tempshell-2.png",
         "/projects/Tempshell-3.png",
+        "/projects/Tempshell-4.png",
       ],
     },
     {
