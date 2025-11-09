@@ -26,7 +26,7 @@ const Achievements = () => {
     },
     {
       icon: FaCode,
-      title: "1200+ Problems Solved",
+      title: "1300+ Problems Solved",
       description:
         "Codeforces Specialist (1504), Leetcode Knight (1886), Codechef 4 Star (1838). Consistently solving complex DSA problems across multiple platforms.",
       date: "Ongoing",

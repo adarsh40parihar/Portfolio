@@ -88,7 +88,7 @@ const CodingProfiles = () => {
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Solved{" "}
               <span className="font-bold text-purple-600 dark:text-purple-400">
-                1200+ problems
+                1300+ problems
               </span>{" "}
               across multiple platforms
             </p>

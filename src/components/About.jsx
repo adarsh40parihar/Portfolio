@@ -103,7 +103,7 @@ const About = () => {
 
               <div className="grid grid-cols-3 gap-4 mt-8">
                 <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform">
-                  <div className="text-3xl font-bold gradient-text">1200+</div>
+                  <div className="text-3xl font-bold gradient-text">1300+</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Problems Solved
                   </div>
