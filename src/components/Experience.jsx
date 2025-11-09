@@ -189,12 +189,10 @@ const Experience = () => {
                     "LangChain",
                     "Python",
                     "AI Agents",
-                    "Router Architecture",
-                    "Supervisor Architecture",
-                    "CoT Prompting",
-                    "Reflexion",
-                    "ReAct",
-                    "Data Processing",
+                    "Router & Supervisor Architecture",
+                    "System Prompting",
+                    "Data Chunking",
+                    "Multithreading"
                   ].map((tech, index) => (
                     <span
                       key={index}
@@ -229,7 +227,7 @@ const Experience = () => {
                     15K+
                   </div>
                   <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Rows Processed
+                    Rows processed using data chunking
                   </div>
                 </div>
               </div>
