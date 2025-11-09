@@ -16,7 +16,7 @@ const CodingProfiles = () => {
       rating: 1504,
       maxRating: 1504,
       title: "Specialist",
-      solved: "400+",
+      solved: "300+",
       url: "https://codeforces.com/profile/BugHunter_X",
       gradient: "from-blue-500 to-cyan-500",
       color: "text-blue-500",
@@ -29,7 +29,7 @@ const CodingProfiles = () => {
       maxRating: 1855,
       title: "Knight",
       solved: "600+",
-      url: "https://leetcode.com/u/litian25adarsh/",
+      url: "https://leetcode.com/u/iitian25adarsh/",
       gradient: "from-yellow-500 to-orange-500",
       color: "text-yellow-500",
     },
@@ -41,9 +41,9 @@ const CodingProfiles = () => {
       maxRating: 1839,
       title: "4 Star",
       solved: "200+",
-      url: "https://www.codechef.com/users/litian25adarsh",
-      gradient: "from-brown-600 to-amber-700",
-      color: "text-amber-700",
+      url: "https://www.codechef.com/users/iitian25adarsh",
+      gradient: "from-blue-500 to-cyan-500",
+      color: "text-blue-500",
     },
   ];
 
@@ -187,27 +187,27 @@ const CodingProfiles = () => {
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl">
-                <div className="text-2xl font-bold gradient-text">150+</div>
+                <div className="text-2xl font-bold gradient-text">100+</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   CSES
                 </div>
               </div>
               <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl">
-                <div className="text-2xl font-bold gradient-text">200+</div>
+                <div className="text-2xl font-bold gradient-text">150+</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   GeeksforGeeks
                 </div>
               </div>
               <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl">
-                <div className="text-2xl font-bold gradient-text">1200+</div>
+                <div className="text-2xl font-bold gradient-text">1300+</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Total Solved
                 </div>
               </div>
               <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl">
-                <div className="text-2xl font-bold gradient-text">90+</div>
+                <div className="text-2xl font-bold gradient-text">300+</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Max Streak
+                  Total Active Days
                 </div>
               </div>
             </div>
