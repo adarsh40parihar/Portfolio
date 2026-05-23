@@ -79,15 +79,18 @@ const Projects = ({ onLightboxChange }) => {
     {
       title: "CineHub",
       description:
-        "A scalable OTT video streaming platform with secure authentication, Razorpay payment integration, premium subscriptions, wishlist tracking, and OTP-based password recovery.",
+        "Engineered a scalable OTT platform supporting real-time video streaming, secure JWT authentication, and Razorpay-based payments, with features like subscriptions, wishlist tracking, and OTP-based recovery.",
       tech: [
         "Next.js",
         "Node.js",
         "JWT",
         "Express.js",
+        "Axios",
         "MongoDB",
-        "Razorpay",
+        "Nodemailer",
         "Redux",
+        "Razorpay",
+        "Streaming",
         "Tailwind CSS",
       ],
       github: "https://github.com/adarsh40parihar",
@@ -105,7 +108,7 @@ const Projects = ({ onLightboxChange }) => {
     {
       title: "TempShell",
       description:
-        "Developed a secure, scalable platform for spawning temporary shells with isolated environments. Optimized pod creation to achieve startup times under 30 seconds with JWT-based authentication.",
+        "Developed TempShell, a secure and scalable platform for isolated temporary shell access, achieving ~30s container startup time and implementing JWT-based authentication with MySQL-backed user management.",
       tech: ["Docker", "Kubernetes", "Python", "FastAPI", "MySQL", "React.js"],
       github: "https://github.com/adarsh40parihar",
       demo: null,
@@ -116,6 +119,15 @@ const Projects = ({ onLightboxChange }) => {
         "/projects/Tempshell-3.png",
         "/projects/Tempshell-4.png",
       ],
+    },
+    {
+      title: "Multi-Agent SEO & GA System",
+      description:
+        "Orchestrated a Multi-Agent architecture that integrates specialized SEO and GA agents behind a single endpoint, delivering accurate, Python-validated analysis powered by LLMs from dynamically changing live Google Sheets.",
+      tech: ["Python", "Pandas", "FastAPI", "Google Sheets API", "OpenAI/LLM"],
+      github: "https://github.com/adarsh40parihar",
+      demo: null,
+      gradient: "from-blue-500 to-cyan-500",
     },
     {
       title: "PearlCTF 2025",

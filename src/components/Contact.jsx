@@ -142,7 +142,7 @@ const Contact = () => {
     {
       icon: FaCode,
       label: "Codolio",
-      url: "https://codolio.com/profile/BugHunter",
+      url: "https://codolio.com/profile/sidar",
       color: "hover:text-purple-600",
     },
   ];

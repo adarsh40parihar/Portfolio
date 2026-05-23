@@ -28,7 +28,7 @@ const CodingProfiles = () => {
       rating: 1855,
       maxRating: 1855,
       title: "Knight",
-      solved: "600+",
+      solved: "650+",
       url: "https://leetcode.com/u/siadar/",
       gradient: "from-yellow-500 to-orange-500",
       color: "text-yellow-500",

@@ -9,6 +9,14 @@ const Achievements = () => {
 
   const achievements = [
     {
+      icon: FaTrophy,
+      title: "2nd Rank - Spike AI Hackathon 2025",
+      description:
+        "Secured 2nd rank in Spike AI Hackathon 2025 by building and shipping an LLM-powered Multi-Agent system.",
+      date: "2025",
+      color: "from-yellow-500 to-amber-500",
+    },
+    {
       icon: FaShieldAlt,
       title: "Organized PearlCTF 2024 & 2025",
       description:
@@ -28,7 +36,7 @@ const Achievements = () => {
       icon: FaCode,
       title: "1300+ Problems Solved",
       description:
-        "Codeforces Specialist (1504), Leetcode Knight (1886), Codechef 4 Star (1838). Consistently solving complex DSA problems across multiple platforms.",
+        "Codeforces Specialist (1504), Leetcode Knight (1855), Codechef 4 Star (1839). Consistently solving complex DSA problems across multiple platforms.",
       date: "Ongoing",
       color: "from-green-500 to-emerald-500",
     },
@@ -170,51 +178,6 @@ const Achievements = () => {
               ))}
             </div>
           </div>
-
-          {/* Competitive Programming Stats */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-16 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-600/10 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 dark:border-navy-700/50"
-          >
-            <h3 className="text-2xl font-bold text-center mb-8 gradient-text">
-              Competitive Programming Stats
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-white/50 dark:bg-navy-800/50 rounded-xl">
-                <div className="text-4xl font-bold gradient-text mb-2">
-                  1504
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Codeforces Rating
-                </div>
-                <div className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
-                  Specialist
-                </div>
-              </div>
-              <div className="text-center p-6 bg-white/50 dark:bg-navy-800/50 rounded-xl">
-                <div className="text-4xl font-bold gradient-text mb-2">
-                  1855
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  LeetCode Rating
-                </div>
-                <div className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
-                  Knight
-                </div>
-              </div>
-              <div className="text-center p-6 bg-white/50 dark:bg-navy-800/50 rounded-xl">
-                <div className="text-4xl font-bold gradient-text mb-2">
-                  1839
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  CodeChef Rating
-                </div>
-                <div className="text-xs text-cyan-600 dark:text-cyan-400 mt-1">
-                  4 Star
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
     </section>

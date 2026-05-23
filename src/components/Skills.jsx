@@ -52,6 +52,7 @@ const Skills = () => {
           color: "text-gray-700 dark:text-gray-300",
         },
         { name: "FastAPI", icon: FaPython, color: "text-teal-500" },
+        { name: "Nodemailer", icon: FaNode, color: "text-green-500" },
       ],
     },
     {
@@ -67,6 +68,7 @@ const Skills = () => {
         { name: "Docker", icon: FaDocker, color: "text-blue-500" },
         { name: "Kubernetes", icon: SiKubernetes, color: "text-blue-600" },
         { name: "AWS", icon: FaAws, color: "text-orange-500" },
+        { name: "LocalStack", icon: FaDocker, color: "text-yellow-600" },
       ],
     },
     {
@@ -75,7 +77,7 @@ const Skills = () => {
         { name: "C++", icon: SiCplusplus, color: "text-blue-600" },
         { name: "JavaScript", icon: SiJavascript, color: "text-yellow-400" },
         { name: "Python", icon: FaPython, color: "text-blue-500" },
-        { name: "Java", icon: FaJava, color: "text-red-600" },
+        { name: "SQL", icon: SiMysql, color: "text-blue-600" },
       ],
     },
     {
@@ -176,10 +178,15 @@ const Skills = () => {
                 "DBMS",
                 "Computer Networks",
                 "System Design",
+                "LangGraph & LangChain",
+                "Multi-Agent Systems",
+                "ReAct Agents",
+                "Tool Binding",
                 "Cryptography",
                 "Web Exploitation",
-                "LangGraph & LangChain",
-                "Multi-agent Systems",
+                "Razorpay Payments",
+                "Nodemailer",
+                "LocalStack",
               ].map((competency, index) => (
                 <motion.span
                   key={index}

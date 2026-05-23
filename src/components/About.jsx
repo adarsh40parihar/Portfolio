@@ -67,12 +67,10 @@ const About = () => {
             <motion.div variants={itemVariants} className="order-2 md:order-1">
               <div className="prose prose-lg dark:prose-invert max-w-none">
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                  I'm a final-year{" "}
-                  <span className="font-semibold text-cyan-600 dark:text-cyan-400">
-                    B.Tech student
+                  I'm a <span className="font-semibold text-cyan-600 dark:text-cyan-400">
+                    B.Tech graduate
                   </span>{" "}
-                  from <span className="font-semibold">IIT (ISM) Dhanbad</span>{" "}
-                  and a passionate{" "}
+                  from <span className="font-semibold">IIT (ISM) Dhanbad</span> (May 2026) and a passionate{" "}
                   <span className="font-semibold text-purple-600 dark:text-purple-400">
                     Software Engineer
                   </span>{" "}
@@ -105,11 +103,11 @@ const About = () => {
                 <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform">
                   <div className="text-3xl font-bold gradient-text">1300+</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Problems Solved
+                    Problems Solved (DSA & CP)
                   </div>
                 </div>
                 <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform">
-                  <div className="text-3xl font-bold gradient-text">8.12</div>
+                  <div className="text-3xl font-bold gradient-text">8.13</div>
                   <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     CGPA
                   </div>
