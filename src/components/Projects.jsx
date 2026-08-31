@@ -1,470 +1,313 @@
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import {
-  FaGithub,
-  FaExternalLinkAlt,
-  FaChevronLeft,
-  FaChevronRight,
-  FaTimes,
-} from "react-icons/fa";
+import { FiGithub, FiExternalLink, FiChevronLeft, FiChevronRight, FiMaximize2 } from "react-icons/fi";
+import Section from "./Section";
+import { projects } from "../data/profile";
 
-const Projects = ({ onLightboxChange }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const [currentImageIndex, setCurrentImageIndex] = useState({});
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState(null);
-  const [lightboxProjectIndex, setLightboxProjectIndex] = useState(null);
+/* ------------------------------------------------------------------ */
+/* Quick Look — a macOS-style preview window for project screenshots    */
+/* ------------------------------------------------------------------ */
+function QuickLook({ project, index, onIndex, onClose }) {
+  const images = project?.images ?? [];
 
-  // Prevent body scroll when lightbox is open
+  const step = useCallback(
+    (dir) => {
+      if (!images.length) return;
+      onIndex((index + dir + images.length) % images.length);
+    },
+    [images.length, index, onIndex]
+  );
+
   useEffect(() => {
-    if (lightboxOpen) {
-      document.body.style.overflow = "hidden";
-      onLightboxChange?.(true); // Notify parent
-    } else {
-      document.body.style.overflow = "unset";
-      onLightboxChange?.(false); // Notify parent
-    }
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") step(1);
+      if (e.key === "ArrowLeft") step(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
     };
-  }, [lightboxOpen, onLightboxChange]);
+  }, [onClose, step]);
 
-  // Close lightbox on Escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && lightboxOpen) {
-        setLightboxOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [lightboxOpen]);
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
+      onClick={onClose}
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md sm:p-8"
+    >
+      <motion.div
+        initial={{ scale: 0.97, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.97, opacity: 0 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(e) => e.stopPropagation()}
+        className="win flex max-h-full w-full max-w-5xl flex-col"
+      >
+        <div className="win-bar shrink-0">
+          <div className="tl-group">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close preview"
+              className="tl-btn tl-red"
+            >
+              <svg viewBox="0 0 7 7" fill="none">
+                <path
+                  d="M1.3 1.3 5.7 5.7M5.7 1.3 1.3 5.7"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+            <span className="tl-btn" style={{ background: "#3a3a3a" }} />
+            <span className="tl-btn" style={{ background: "#3a3a3a" }} />
+          </div>
+          <span className="win-title mx-auto -translate-x-6 truncate font-mono text-[11.5px]">
+            {project.title} — {index + 1} of {images.length}
+          </span>
+        </div>
 
-  const openLightbox = (image, projectIndex) => {
-    setLightboxImage(image);
-    setLightboxProjectIndex(projectIndex);
-    setLightboxOpen(true);
-  };
+        <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#060606] p-3 sm:p-6">
+          <img
+            src={images[index]}
+            alt={`${project.title} screenshot ${index + 1}`}
+            className="max-h-[72vh] w-auto max-w-full rounded-md object-contain"
+          />
 
-  const closeLightbox = () => {
-    setLightboxOpen(false);
-    setLightboxImage(null);
-    setLightboxProjectIndex(null);
-  };
+          {images.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() => step(-1)}
+                aria-label="Previous screenshot"
+                className="absolute left-3 grid h-9 w-9 place-items-center rounded-full border border-line-strong bg-black/70 text-ink-dim backdrop-blur transition-colors hover:text-ink"
+              >
+                <FiChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => step(1)}
+                aria-label="Next screenshot"
+                className="absolute right-3 grid h-9 w-9 place-items-center rounded-full border border-line-strong bg-black/70 text-ink-dim backdrop-blur transition-colors hover:text-ink"
+              >
+                <FiChevronRight className="h-4 w-4" />
+              </button>
+            </>
+          )}
+        </div>
 
-  const navigateLightbox = (direction) => {
-    if (lightboxProjectIndex === null) return;
-    const project = projects[lightboxProjectIndex];
-    if (!project.images) return;
+        <div className="flex shrink-0 items-center justify-between border-t border-line bg-surface-2 px-4 py-2 font-mono text-2xs text-ink-faint">
+          <span>{project.kind}</span>
+          <span className="flex items-center gap-2">
+            <span className="kbd">←</span>
+            <span className="kbd">→</span>
+            <span className="kbd">esc</span>
+          </span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
-    const currentIdx = currentImageIndex[lightboxProjectIndex] || 0;
-    let newIdx;
+/* ------------------------------------------------------------------ */
+/* Card                                                                */
+/* ------------------------------------------------------------------ */
+function ProjectCard({ project, onOpen }) {
+  const [frame, setFrame] = useState(0);
+  const images = project.images ?? [];
+  const hasShots = images.length > 0;
 
-    if (direction === "next") {
-      newIdx = (currentIdx + 1) % project.images.length;
-    } else {
-      newIdx = (currentIdx - 1 + project.images.length) % project.images.length;
-    }
-
-    setCurrentImageIndex((prev) => ({
-      ...prev,
-      [lightboxProjectIndex]: newIdx,
-    }));
-    setLightboxImage(project.images[newIdx]);
-  };
-
-  const projects = [
-    {
-      title: "CineHub",
-      description:
-        "Engineered a scalable OTT platform supporting real-time video streaming, secure JWT authentication, and Razorpay-based payments, with features like subscriptions, wishlist tracking, and OTP-based recovery.",
-      tech: [
-        "Next.js",
-        "Node.js",
-        "JWT",
-        "Express.js",
-        "Axios",
-        "MongoDB",
-        "Nodemailer",
-        "Redux",
-        "Razorpay",
-        "Streaming",
-        "Tailwind CSS",
-      ],
-      github: "https://github.com/adarsh40parihar",
-      demo: null,
-      gradient: "from-pink-500 to-rose-500",
-      images: [
-        "/projects/cinehub-1.png",
-        "/projects/cinehub-2.png",
-        "/projects/cinehub-3.png",
-        "/projects/cinehub-4.png",
-        "/projects/cinehub-5.png",
-        "/projects/cinehub-6.png",
-      ],
-    },
-    {
-      title: "TempShell",
-      description:
-        "Developed TempShell, a secure and scalable platform for isolated temporary shell access, achieving ~30s container startup time and implementing JWT-based authentication with MySQL-backed user management.",
-      tech: ["Docker", "Kubernetes", "Python", "FastAPI", "MySQL", "React.js"],
-      github: "https://github.com/adarsh40parihar",
-      demo: null,
-      gradient: "from-cyan-500 to-blue-500",
-      images: [
-        "/projects/Tempshell-1.png",
-        "/projects/Tempshell-2.png",
-        "/projects/Tempshell-3.png",
-        "/projects/Tempshell-4.png",
-      ],
-    },
-    {
-      title: "Multi-Agent SEO & GA System",
-      description:
-        "Orchestrated a Multi-Agent architecture that integrates specialized SEO and GA agents behind a single endpoint, delivering accurate, Python-validated analysis powered by LLMs from dynamically changing live Google Sheets.",
-      tech: ["Python", "Pandas", "FastAPI", "Google Sheets API", "OpenAI/LLM"],
-      github: "https://github.com/adarsh40parihar",
-      demo: null,
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      title: "PearlCTF 2025",
-      description:
-        "Organized and hosted a global cybersecurity competition with 2500+ participants from around the world. Developed infrastructure using Docker & Nginx with multiple challenge categories.",
-      tech: ["Docker", "Nginx", "Linux", "CTF Challenges", "Web Security"],
-      github: "https://github.com/Cyberlabs-Infosec",
-      demo: null,
-      gradient: "from-purple-500 to-indigo-500",
-    },
-    {
-      title: "InternHelper",
-      description:
-        "Engineered an automation tool using Puppeteer to auto-fill user profiles and intelligently apply to 50+ internships per run on Internshala, reducing manual effort by over 90%.",
-      tech: ["Node.js", "Express.js", "Puppeteer", "JavaScript", "HTML/CSS"],
-      github: "https://github.com/adarsh40parihar",
-      demo: null,
-      gradient: "from-green-500 to-emerald-500",
-    },
-    {
-      title: "Fake Profile Detector",
-      description:
-        "Developed an ML-based system for Smart India Hackathon 2023 to detect fake Instagram accounts with 90%+ accuracy using Random Forest algorithm and Python-based web scraping.",
-      tech: [
-        "Python",
-        "Instaloader",
-        "Streamlit",
-        "Jupyter",
-        "ML-Random Forest",
-        "JavaScript",
-      ],
-      github: "https://github.com/adarsh40parihar",
-      demo: null,
-      gradient: "from-orange-500 to-amber-500",
-    },
-    {
-      title: "Trailblaze CTF",
-      description:
-        "Organized an intra-college CTF event during Concetto 2023 with 600+ participants, featuring challenges across multiple cybersecurity domains.",
-      tech: ["CTF Infrastructure", "Web Security", "Cryptography", "Forensics"],
-      github: null,
-      demo: null,
-      gradient: "from-red-500 to-pink-500",
-    },
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
+  const shift = (dir, e) => {
+    e.stopPropagation();
+    setFrame((f) => (f + dir + images.length) % images.length);
   };
 
   return (
-    <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8 relative z-10">
-      <div className="container mx-auto max-w-7xl">
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-center mb-16"
-          >
-            Featured <span className="gradient-text">Projects</span>
-          </motion.h2>
+    <article className="group flex flex-col overflow-hidden rounded-lg border border-line bg-surface-2/40 transition-colors duration-300 hover:border-line-bright">
+      {/* Preview */}
+      <div
+        className={`relative overflow-hidden border-b border-line bg-[#060606] ${
+          hasShots ? "aspect-[16/10]" : "h-24"
+        }`}
+      >
+        {hasShots ? (
+          <>
+            <img
+              key={frame}
+              src={images[frame]}
+              alt={`${project.title} preview`}
+              loading="lazy"
+              decoding="async"
+              onClick={() => onOpen(project, frame)}
+              className="h-full w-full cursor-zoom-in object-cover object-top opacity-90 transition-all duration-500 group-hover:scale-[1.02] group-hover:opacity-100"
+            />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <motion.div
-                key={index}
-                variants={itemVariants}
-                whileHover={{ y: -10 }}
-                className="group relative bg-white/50 dark:bg-navy-800/50 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200/50 dark:border-navy-700/50"
-              >
-                {/* Gradient header */}
-                <div
-                  className={`h-2 bg-gradient-to-r ${project.gradient}`}
-                ></div>
-
-                {/* Project Images Carousel */}
-                {project.images && project.images.length > 0 && (
-                  <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-navy-900 dark:to-navy-800 overflow-hidden group/image flex items-center justify-center">
-                    <motion.img
-                      key={currentImageIndex[index] || 0}
-                      src={project.images[currentImageIndex[index] || 0]}
-                      alt={`${project.title} screenshot ${
-                        (currentImageIndex[index] || 0) + 1
-                      }`}
-                      className="max-w-full max-h-full object-contain cursor-zoom-in"
-                      initial={{ scale: 1 }}
-                      whileHover={{ scale: 1.05 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 20,
-                      }}
-                      onClick={() =>
-                        openLightbox(
-                          project.images[currentImageIndex[index] || 0],
-                          index
-                        )
-                      }
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                      }}
-                    />
-
-                    {/* Image Navigation - More visible on hover */}
-                    {project.images.length > 1 && (
-                      <>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentImageIndex((prev) => ({
-                              ...prev,
-                              [index]:
-                                ((prev[index] || 0) -
-                                  1 +
-                                  project.images.length) %
-                                project.images.length,
-                            }));
-                          }}
-                          className="absolute left-2 top-1/2 -translate-y-1/2 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full transition-all opacity-0 group-hover/image:opacity-100 hover:scale-110 z-10"
-                          aria-label="Previous image"
-                        >
-                          <FaChevronLeft className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentImageIndex((prev) => ({
-                              ...prev,
-                              [index]:
-                                ((prev[index] || 0) + 1) %
-                                project.images.length,
-                            }));
-                          }}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full transition-all opacity-0 group-hover/image:opacity-100 hover:scale-110 z-10"
-                          aria-label="Next image"
-                        >
-                          <FaChevronRight className="w-5 h-5" />
-                        </button>
-
-                        {/* Image indicators - More prominent */}
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                          {project.images.map((_, imgIndex) => (
-                            <button
-                              key={imgIndex}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setCurrentImageIndex((prev) => ({
-                                  ...prev,
-                                  [index]: imgIndex,
-                                }));
-                              }}
-                              className={`h-2 rounded-full transition-all ${
-                                (currentImageIndex[index] || 0) === imgIndex
-                                  ? "bg-white w-8 shadow-lg"
-                                  : "bg-white/60 w-2 hover:bg-white/90 hover:w-4"
-                              }`}
-                              aria-label={`Go to image ${imgIndex + 1}`}
-                            />
-                          ))}
-                        </div>
-
-                        {/* Image counter overlay */}
-                        <div className="absolute top-3 right-3 px-3 py-1 bg-black/70 text-white text-xs font-semibold rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity">
-                          {(currentImageIndex[index] || 0) + 1} /{" "}
-                          {project.images.length}
-                        </div>
-                      </>
-                    )}
-
-                    {/* Zoom hint overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="px-4 py-2 bg-black/70 text-white text-sm font-medium rounded-lg opacity-0 group-hover/image:opacity-100 transition-opacity transform scale-90 group-hover/image:scale-100">
-                        🔍 Click to view full screen
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-3 group-hover:gradient-text transition-all">
-                    {project.title}
-                  </h3>
-
-                  <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-4">
-                    {project.description}
-                  </p>
-
-                  {/* Tech stack */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tech.map((tech, techIndex) => (
-                      <span
-                        key={techIndex}
-                        className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-700 dark:text-cyan-300 rounded-full border border-cyan-500/30"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Links */}
-                  <div className="flex gap-4">
-                    {project.github && (
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
-                      >
-                        <FaGithub className="w-5 h-5" />
-                        <span className="text-sm font-medium">Code</span>
-                      </a>
-                    )}
-                    {project.demo && (
-                      <a
-                        href={project.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-purple-500 dark:hover:text-purple-400 transition-colors"
-                      >
-                        <FaExternalLinkAlt className="w-4 h-4" />
-                        <span className="text-sm font-medium">Demo</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Hover effect overlay */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`}
-                ></div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Full Screen Lightbox Modal */}
-      <AnimatePresence>
-        {lightboxOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={closeLightbox}
-          >
-            {/* Close Button */}
             <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white rounded-full transition-all hover:scale-110 hover:rotate-90 z-[10000] shadow-lg border border-white/30"
-              aria-label="Close"
+              type="button"
+              onClick={() => onOpen(project, frame)}
+              aria-label="Open preview"
+              className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-md border border-line-strong bg-black/70 text-ink-dim opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 hover:text-ink"
             >
-              <FaTimes className="w-5 h-5" />
+              <FiMaximize2 className="h-3.5 w-3.5" />
             </button>
 
-            {/* Image Container */}
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative max-w-5xl max-h-[80vh] w-full"
-              onClick={(e) => e.stopPropagation()}
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => shift(-1, e)}
+                  aria-label="Previous screenshot"
+                  className="absolute left-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full border border-line-strong bg-black/70 text-ink-dim opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 hover:text-ink"
+                >
+                  <FiChevronLeft className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => shift(1, e)}
+                  aria-label="Next screenshot"
+                  className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full border border-line-strong bg-black/70 text-ink-dim opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 hover:text-ink"
+                >
+                  <FiChevronRight className="h-3.5 w-3.5" />
+                </button>
+                <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
+                  {images.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      aria-label={`Screenshot ${i + 1}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFrame(i);
+                      }}
+                      className={`h-1 rounded-full transition-all ${
+                        i === frame ? "w-5 bg-ink" : "w-1.5 bg-ink-faint"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          /* No screenshots — a schematic placeholder rather than a broken frame */
+          <div className="bg-grid grid h-full w-full place-items-center">
+            <span className="font-mono text-2xs uppercase tracking-label text-ink-faint">
+              {project.kind}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="text-[17px] font-medium tracking-tight">
+            {project.title}
+          </h3>
+          <span className="shrink-0 font-mono text-2xs text-ink-faint">
+            {project.year}
+          </span>
+        </div>
+        <p className="mt-0.5 font-mono text-2xs uppercase tracking-label text-ink-faint">
+          {project.kind}
+        </p>
+
+        <p className="mt-3 text-[13.5px] leading-relaxed text-ink-dim">
+          {project.description}
+        </p>
+
+        {project.highlights?.length > 0 && (
+          <ul className="mt-4 space-y-1.5">
+            {project.highlights.map((h) => (
+              <li
+                key={h}
+                className="flex items-center gap-2 font-mono text-2xs text-ink-mute"
+              >
+                <span className="h-px w-3 bg-line-bright" />
+                {h}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="mt-5 flex flex-wrap gap-1.5">
+          {project.stack.map((t) => (
+            <span key={t} className="chip">
+              {t}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-auto flex items-center gap-4 pt-5">
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[13px] text-ink-mute transition-colors hover:text-ink"
             >
-              <img
-                src={lightboxImage}
-                alt="Full screen view"
-                className="w-full h-full object-contain rounded-lg shadow-2xl"
-              />
+              <FiGithub className="h-3.5 w-3.5" />
+              Source
+            </a>
+          )}
+          {project.demo && (
+            <a
+              href={project.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[13px] text-ink-mute transition-colors hover:text-ink"
+            >
+              <FiExternalLink className="h-3.5 w-3.5" />
+              Live
+            </a>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
 
-              {/* Navigation Buttons for Multiple Images */}
-              {lightboxProjectIndex !== null &&
-                projects[lightboxProjectIndex].images &&
-                projects[lightboxProjectIndex].images.length > 1 && (
-                  <>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigateLightbox("prev");
-                      }}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 p-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all hover:scale-110"
-                      aria-label="Previous image"
-                    >
-                      <FaChevronLeft className="w-6 h-6" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigateLightbox("next");
-                      }}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-4 bg-white/20 hover:bg-white/30 text-white rounded-full transition-all hover:scale-110"
-                      aria-label="Next image"
-                    >
-                      <FaChevronRight className="w-6 h-6" />
-                    </button>
+/* ------------------------------------------------------------------ */
+export default function Projects() {
+  const [preview, setPreview] = useState(null); // { project, index }
 
-                    {/* Image Counter */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/70 text-white text-sm font-semibold rounded-full">
-                      {(currentImageIndex[lightboxProjectIndex] || 0) + 1} /{" "}
-                      {projects[lightboxProjectIndex].images.length}
-                    </div>
-                  </>
-                )}
-            </motion.div>
+  return (
+    <>
+      <Section
+        id="projects"
+        index="03"
+        label="Projects"
+        title="Projects"
+        meta={`${projects.length} items`}
+      >
+        <div className="grid gap-5 lg:grid-cols-2">
+          {projects.map((p) => (
+            <ProjectCard
+              key={p.id}
+              project={p}
+              onOpen={(project, index) => setPreview({ project, index })}
+            />
+          ))}
+        </div>
+      </Section>
 
-            {/* Instructions */}
-            <div className="absolute bottom-4 right-4 text-white/60 text-sm">
-              Press <kbd className="px-2 py-1 bg-white/10 rounded">ESC</kbd> to
-              close
-            </div>
-          </motion.div>
+      <AnimatePresence>
+        {preview && (
+          <QuickLook
+            project={preview.project}
+            index={preview.index}
+            onIndex={(i) => setPreview((p) => ({ ...p, index: i }))}
+            onClose={() => setPreview(null)}
+          />
         )}
       </AnimatePresence>
-    </section>
+    </>
   );
-};
-
-export default Projects;
+}

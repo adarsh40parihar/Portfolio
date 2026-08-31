@@ -2,39 +2,339 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ------------------------------------------------------------------
+   Design tokens
+   Greys are Vercel Geist's dark scale (converted from the oklch values
+   published in vercel-brand.css). Chromatic colour is reserved almost
+   entirely for the macOS window controls, so the UI reads monochrome.
+   ------------------------------------------------------------------ */
+:root {
+  --canvas: #000000;
+  --surface: #0a0a0a;
+  --surface-2: #111111;
+  --surface-3: #161616;
+  --line: #1f1f1f;
+  --line-strong: #292929;
+  --ink: #ededed;
+  --ink-dim: #a0a0a0;
+  --ink-mute: #8f8f8f;
+  --ink-faint: #454545;
+
+  --tl-red: #ff5f57;
+  --tl-yellow: #febc2e;
+  --tl-green: #28c840;
+
+  /* menu bar height — sections offset their scroll anchor by this */
+  --menubar-h: 38px;
+
+  color-scheme: dark;
 }
 
-body {
-  font-family: "Poppins", sans-serif;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* keep anchored sections clear of the fixed menu bar */
+    scroll-padding-top: calc(var(--menubar-h) + 24px);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: theme("fontFamily.sans");
+    font-feature-settings: "cv11", "ss01";
+    font-variant-ligatures: contextual;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(237, 237, 237, 0.92);
+    color: #000;
+  }
+
+  /* Thin, dark scrollbars — matches the Vercel/Render dashboard feel */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--canvas);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #262626;
+    border: 2px solid var(--canvas);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+  }
+
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px rgba(237, 237, 237, 0.55);
+    border-radius: 6px;
+  }
+
+  input,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+@layer components {
+  /* ---------- Window chrome ---------- */
+  .win {
+    position: relative;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.95),
+      0 1px 0 0 rgba(255, 255, 255, 0.04) inset;
+    overflow: hidden;
+  }
+
+  /* Frosted title bar, like a macOS window in dark mode */
+  .win-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+    padding: 0 12px;
+    background: linear-gradient(180deg, #1c1c1c 0%, #141414 100%);
+    border-bottom: 1px solid var(--line);
+    user-select: none;
+  }
+
+  .win-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-dim);
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- Traffic lights ---------- */
+  .tl-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tl-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    position: relative;
+    display: grid;
+    place-items: center;
+    transition: filter 0.15s ease, transform 0.15s ease;
+    box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.35);
+  }
+  .tl-btn:active {
+    transform: scale(0.9);
+    filter: brightness(0.8);
+  }
+  .tl-red {
+    background: var(--tl-red);
+  }
+  .tl-yellow {
+    background: var(--tl-yellow);
+  }
+  .tl-green {
+    background: var(--tl-green);
+  }
+
+  /* Glyphs appear on hover of the whole cluster — exactly like macOS */
+  .tl-btn svg {
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    width: 7px;
+    height: 7px;
+    color: rgba(0, 0, 0, 0.62);
+  }
+  .tl-group:hover .tl-btn svg {
+    opacity: 1;
+  }
+
+  /* Dimmed window controls when the section is "inactive" */
+  .tl-idle .tl-btn {
+    background: #3a3a3a;
+  }
+
+  /* ---------- Micro labels ---------- */
+  .label {
+    font-family: theme("fontFamily.mono");
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- Chips ---------- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    font-family: theme("fontFamily.mono");
+    font-size: 11px;
+    color: var(--ink-dim);
+    transition: border-color 0.18s ease, color 0.18s ease,
+      background-color 0.18s ease;
+  }
+  .chip:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+    background: var(--surface-3);
+  }
+
+  /* ---------- Inputs ---------- */
+  .field {
+    width: 100%;
+    background: #0d0d0d;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--ink);
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+  .field::placeholder {
+    color: var(--ink-faint);
+  }
+  .field:focus {
+    outline: none;
+    border-color: #3d3d3d;
+    background: #101010;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #000;
+    font-size: 13.5px;
+    font-weight: 500;
+    border: 1px solid var(--ink);
+    transition: opacity 0.18s ease, transform 0.12s ease;
+  }
+  .btn-primary:hover {
+    opacity: 0.86;
+  }
+  .btn-primary:active {
+    transform: scale(0.985);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink-dim);
+    font-size: 13.5px;
+    font-weight: 500;
+    border: 1px solid var(--line-strong);
+    transition: color 0.18s ease, border-color 0.18s ease,
+      background-color 0.18s ease;
+  }
+  .btn-ghost:hover {
+    color: var(--ink);
+    border-color: #3d3d3d;
+    background: var(--surface-2);
+  }
+
+  /* ---------- Keyboard hint ---------- */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 4px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface-2);
+    font-family: theme("fontFamily.mono");
+    font-size: 10px;
+    color: var(--ink-mute);
+  }
 }
 
 @layer utilities {
-  .gradient-text {
-    @apply bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent;
+  /* Fine engineering grid — the Vercel/Render dashboard backdrop */
+  .bg-grid {
+    background-image: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.028) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+    background-size: 56px 56px;
   }
 
-  .gradient-border {
-    position: relative;
+  /* Hairline that fades at both ends */
+  .rule {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--line-strong) 18%,
+      var(--line-strong) 82%,
+      transparent
+    );
   }
 
-  .gradient-border::before {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Faint film grain so the pure black never looks flat */
+  .grain::after {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.16;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+}
+
+/* Respect reduced-motion across every animated affordance */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }

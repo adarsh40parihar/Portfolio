@@ -1,35 +1,26 @@
-import { FaHeart } from "react-icons/fa";
+import { FiArrowUp } from "react-icons/fi";
+import { profile } from "../data/profile";
 
-const Footer = () => {
+/** A thin status bar to close the desktop metaphor. */
+export default function Footer() {
   return (
-    <footer className="relative z-10 py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-200 dark:border-navy-700">
-      <div className="container mx-auto max-w-6xl">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-            <span>© 2025 Adarsh Singh Parihar</span>
-          </div>
+    <footer className="relative border-t border-line px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-2 font-mono text-2xs text-ink-faint">
+        <span>© {new Date().getFullYear()} {profile.name}</span>
 
-          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-            <span>Built with</span>
-            <FaHeart className="text-red-500 w-4 h-4 animate-pulse" />
-            <span>using</span>
-            <span className="font-semibold gradient-text">
-              React
-            </span>
-          </div>
+        <span className="hidden items-center gap-2 sm:flex">
+          <span className="h-1.5 w-1.5 rounded-full bg-tl-green" />
+          React · Vite · Tailwind — deployed on Vercel
+        </span>
 
-          <div className="text-gray-600 dark:text-gray-400">
-            <a
-              href="#home"
-              className="hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
-            >
-              Back to Top ↑
-            </a>
-          </div>
-        </div>
+        <a
+          href="#home"
+          className="flex items-center gap-1.5 transition-colors hover:text-ink-dim"
+        >
+          <FiArrowUp className="h-3 w-3" />
+          Back to top
+        </a>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

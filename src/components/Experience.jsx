@@ -1,423 +1,156 @@
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
-import {
-  FaBriefcase,
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaAward,
-} from "react-icons/fa";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiAward, FiMapPin, FiCalendar } from "react-icons/fi";
+import Section from "./Section";
+import { experience } from "../data/profile";
 
-const Experience = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { x: -50, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
-  };
-
-  const achievements = [
-    {
-      icon: FaAward,
-      text: "Developed Agentic AI system using LangGraph & LangChain",
-    },
-    {
-      icon: FaAward,
-      text: "Achieved 90-95% accuracy in automated workflows",
-    },
-    {
-      icon: FaAward,
-      text: "Saved 4-5 hours of daily manual effort",
-    },
-    {
-      icon: FaAward,
-      text: "Implemented Router & Supervisor architectures for parallel Agent calls",
-    },
-    {
-      icon: FaAward,
-      text: "Built token usage tracker for cost estimation",
-    },
-    {
-      icon: FaAward,
-      text: "Optimized Agent workflows to handle 10K-15K row datasets",
-    },
-  ];
+/** Mail.app-style split view: source list on the left, detail on the right. */
+export default function Experience() {
+  const [activeId, setActiveId] = useState(experience[0].id);
+  const active = experience.find((e) => e.id === activeId) ?? experience[0];
 
   return (
-    <section
+    <Section
       id="experience"
-      className="py-20 px-4 sm:px-6 lg:px-8 relative z-10 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent"
+      index="02"
+      label="Experience"
+      title="Experience"
+      meta={`${experience.length} roles`}
+      bare
     >
-      <div className="container mx-auto max-w-6xl">
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-center mb-16"
-          >
-            Work <span className="gradient-text">Experience</span>
-          </motion.h2>
-
-          {/* GetSpike AI Experience */}
-          <motion.div
-            variants={itemVariants}
-            className="relative bg-white/50 dark:bg-navy-800/50 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-navy-700/50 mb-8"
-          >
-            {/* Top Section */}
-            <div className="grid md:grid-cols-[300px_1fr] gap-0">
-              {/* Left Side - Company Logo Section */}
-              <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-purple-900 p-8 flex flex-col items-center justify-center min-h-[300px]">
-                {/* Geometric pattern overlay */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,255,255,0.1),transparent_50%)]"></div>
-                  <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(255,255,255,0.05)_48%,rgba(255,255,255,0.05)_52%,transparent_52%)] bg-[length:20px_20px]"></div>
-                </div>
-
-                {/* Logo Container */}
-                <div className="relative z-10 bg-white rounded-3xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                  <img
-                    src="/GetSpikeAI.png"
-                    alt="Spike AI"
-                    className="h-24 w-auto object-contain"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      e.target.parentElement.innerHTML =
-                        '<div class="text-2xl font-bold text-gray-900" style="font-family: serif;">Spike<br/>AI</div>';
-                    }}
-                  />
-                </div>
-
-                {/* Decorative elements */}
-                <div className="absolute top-4 left-4 w-20 h-20 bg-white/10 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-4 right-4 w-32 h-32 bg-cyan-400/20 rounded-full blur-3xl"></div>
-              </div>
-
-              {/* Right Side - Basic Details */}
-              <div className="p-8 md:p-10">
-                <div className="mb-6">
-                  <h3 className="text-3xl md:text-4xl font-bold mb-2 gradient-text">
-                    Software Engineer Intern
-                  </h3>
-                  <p className="text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                    GetSpike AI - Bengaluru, India
-                  </p>
-
-                  {/* Meta Information */}
-                  <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt className="w-4 h-4 text-cyan-500" />
-                      <span className="font-medium">Jan 2026 - Present</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="w-4 h-4 text-cyan-500" />
-                      <span className="font-medium">Bengaluru, India</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaBriefcase className="w-4 h-4 text-cyan-500" />
-                      <span className="font-medium">Full-time Internship</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                    Engineering fully automated solutions leveraging AI and cloud infrastructure to streamline operations and optimize deployment workflows.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Section */}
-            <div className="p-8 md:p-10 pt-0">
-              <div className="mb-8">
-                <h4 className="text-xl font-bold mb-6 flex items-center gap-2">
-                  <span className="gradient-text">Key Achievements</span>
-                  <div className="flex-1 h-px bg-gradient-to-r from-cyan-500 to-transparent"></div>
-                </h4>
-
-                <div className="space-y-3">
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.5 }}
-                    className="flex items-start gap-3 p-4 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl hover:shadow-md transition-all duration-300"
-                  >
-                    <FaAward className="w-5 h-5 text-cyan-500 mt-1 flex-shrink-0" />
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      Engineered a fully automated blog generation pipeline integrating a recommendation system that suggests content types to clients, extracts templates and generates new blog pages using LLM.
-                    </p>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.6 }}
-                    className="flex items-start gap-3 p-4 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl hover:shadow-md transition-all duration-300"
-                  >
-                    <FaAward className="w-5 h-5 text-cyan-500 mt-1 flex-shrink-0" />
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      Developed a LocalStack-based test runner for reliable local testing and migrated automation workflows to AWS-based server infrastructure, enabling scalable, centralized execution and improving deployment reliability.
-                    </p>
-                  </motion.div>
-                </div>
-              </div>
-
-              {/* Technologies Used */}
-              <div className="mb-8">
-                <h4 className="text-lg font-bold mb-4 text-gray-700 dark:text-gray-300">
-                  Technologies & Tools
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "JavaScript",
-                    "Python",
-                    "AWS (Lambda, EC2, SQS, DynamoDB, S3)",
-                    "React",
-                    "Automation",
-                    "Docker",
-                    "LocalStack",
-                    "LLM"
-                  ].map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-500/30 hover:scale-105 transition-transform"
-                    >
-                      {tech}
+      <div className="grid md:grid-cols-[236px_1fr]">
+        {/* Source list */}
+        <div className="flex gap-2 overflow-x-auto border-b border-line p-2 md:flex-col md:gap-1 md:overflow-visible md:border-b-0 md:border-r md:bg-surface-2/40">
+          <p className="label hidden px-3 pb-1 pt-2 md:block">Companies</p>
+          {experience.map((e) => {
+            const selected = e.id === activeId;
+            return (
+              <button
+                key={e.id}
+                type="button"
+                onClick={() => setActiveId(e.id)}
+                aria-pressed={selected}
+                className={`flex min-w-[190px] items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors md:min-w-0 ${
+                  selected
+                    ? "bg-white/[0.07] text-ink"
+                    : "text-ink-mute hover:bg-white/[0.04]"
+                }`}
+              >
+                {/* Monogram rather than the brand PNGs — both are dark
+                    wordmarks that turn to mush at this size. */}
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-line bg-white/[0.04] font-mono text-[10px] font-semibold tracking-wider text-ink-dim">
+                  {e.mono}
+                </span>
+                <span className="min-w-0">
+                  <span className="flex items-center gap-1.5">
+                    <span className="truncate text-[13px] font-medium">
+                      {e.company}
                     </span>
-                  ))}
-                </div>
-              </div>
+                    {e.current && (
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-tl-green animate-pulse-dot" />
+                    )}
+                  </span>
+                  <span className="mt-0.5 block truncate font-mono text-2xs text-ink-faint">
+                    {e.period}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-              {/* Highlight Stats */}
-              {/* <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl">
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    ~30s
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Deployment Time
-                  </div>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl">
-                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-                    100%
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Automated Workflows
-                  </div>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl">
-                  <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                    Multi-Cloud
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Infrastructure
-                  </div>
-                </div>
-              </div> */}
-            </div>
-
-            {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 rounded-full filter blur-3xl -z-10"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/10 to-pink-500/10 rounded-full filter blur-3xl -z-10"></div>
-          </motion.div>
-
+        {/* Detail pane */}
+        <AnimatePresence mode="wait">
           <motion.div
-            variants={itemVariants}
-            className="relative bg-white/50 dark:bg-navy-800/50 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-navy-700/50"
+            key={active.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="p-5 sm:p-7 lg:p-9"
           >
-            {/* Top Section - Logo and Basic Details Side by Side */}
-            <div className="grid md:grid-cols-[300px_1fr] gap-0">
-              {/* Left Side - Company Logo Section */}
-              <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 p-8 flex flex-col items-center justify-center min-h-[300px]">
-                {/* Geometric pattern overlay */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,255,255,0.1),transparent_50%)]"></div>
-                  <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(255,255,255,0.05)_48%,rgba(255,255,255,0.05)_52%,transparent_52%)] bg-[length:20px_20px]"></div>
-                </div>
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-medium tracking-tight sm:text-2xl">
+                  {active.role}
+                </h3>
+                <p className="mt-1 text-ink-dim">{active.company}</p>
+              </div>
+              {active.current && (
+                <span className="chip border-tl-green/25 bg-tl-green/[0.08] text-tl-green">
+                  <span className="h-1.5 w-1.5 rounded-full bg-tl-green" />
+                  Current
+                </span>
+              )}
+            </div>
 
-                {/* Logo Container */}
-                <div className="relative z-10 bg-white rounded-3xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                  <img
-                    src="/Goldman-Sachs-Logo.jpg"
-                    alt="Goldman Sachs"
-                    className="h-25 w-auto object-contain"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                      e.target.parentElement.innerHTML =
-                        '<div class="text-3xl font-bold text-gray-900" style="font-family: serif;">Goldman<br/>Sachs</div>';
-                    }}
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-2xs text-ink-faint">
+              <span className="flex items-center gap-1.5">
+                <FiCalendar className="h-3 w-3" />
+                {active.period}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <FiMapPin className="h-3 w-3" />
+                {active.location}
+              </span>
+              {active.certificate && (
+                <a
+                  href={active.certificate}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-ink-mute underline decoration-line-strong underline-offset-4 transition-colors hover:text-ink"
+                >
+                  <FiAward className="h-3 w-3" />
+                  Certificate
+                </a>
+              )}
+            </div>
+
+            <p className="mt-5 max-w-2xl leading-relaxed text-ink-dim">
+              {active.blurb}
+            </p>
+
+            {/* Metrics */}
+            <div className="mt-7 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
+              {active.metrics.map((m) => (
+                <div key={m.label} className="bg-surface px-4 py-4">
+                  <div className="text-lg font-medium tracking-tight">
+                    {m.value}
+                  </div>
+                  <div className="mt-1 font-mono text-2xs text-ink-faint">
+                    {m.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bullets */}
+            <ul className="mt-7 space-y-3.5">
+              {active.bullets.map((b) => (
+                <li key={b} className="flex gap-3 text-[14.5px] leading-relaxed">
+                  <span
+                    aria-hidden="true"
+                    className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-ink-faint"
                   />
-                </div>
+                  <span className="text-ink-dim">{b}</span>
+                </li>
+              ))}
+            </ul>
 
-                {/* Decorative elements */}
-                <div className="absolute top-4 left-4 w-20 h-20 bg-white/10 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-4 right-4 w-32 h-32 bg-cyan-400/20 rounded-full blur-3xl"></div>
-              </div>
-
-              {/* Right Side - Basic Details */}
-              <div className="p-8 md:p-10">
-                <div className="mb-6">
-                  <h3 className="text-3xl md:text-4xl font-bold mb-2 gradient-text">
-                    Software Engineer Intern
-                  </h3>
-                  <p className="text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                    Summer Analyst - Goldman Sachs
-                  </p>
-
-                  {/* Meta Information */}
-                  <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt className="w-4 h-4 text-cyan-500" />
-                      <span className="font-medium">May 2025 - Jul 2025</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="w-4 h-4 text-cyan-500" />
-                      <span className="font-medium">Bengaluru, India</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FaBriefcase className="w-4 h-4 text-cyan-500" />
-                      <span className="font-medium">Full-time Internship</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                    Worked on cutting-edge AI automation systems, developing
-                    intelligent agents that revolutionized workflow automation
-                    and saved significant manual effort through advanced machine
-                    learning techniques.
-                  </p>
-                </div>
+            {/* Stack */}
+            <div className="mt-7">
+              <p className="label mb-3">Stack</p>
+              <div className="flex flex-wrap gap-1.5">
+                {active.stack.map((t) => (
+                  <span key={t} className="chip">
+                    {t}
+                  </span>
+                ))}
               </div>
             </div>
-
-            {/* Bottom Section - Key Achievements (Full Width) */}
-            <div className="p-8 md:p-10 pt-0">
-              <div className="mb-8">
-                <h4 className="text-xl font-bold mb-6 flex items-center gap-2">
-                  <span className="gradient-text">Key Achievements</span>
-                  <div className="flex-1 h-px bg-gradient-to-r from-cyan-500 to-transparent"></div>
-                </h4>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  {achievements.map((achievement, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ delay: 0.5 + index * 0.1 }}
-                      className="flex items-start gap-3 p-4 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl hover:shadow-md transition-all duration-300"
-                    >
-                      <achievement.icon className="w-5 h-5 text-cyan-500 mt-1 flex-shrink-0" />
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {achievement.text}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Technologies Used */}
-              <div className="mb-8">
-                <h4 className="text-lg font-bold mb-4 text-gray-700 dark:text-gray-300">
-                  Technologies & Tools
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "LangGraph",
-                    "LangChain",
-                    "Python",
-                    "AI Agents",
-                    "Router & Supervisor Architecture",
-                    "System Prompting",
-                    "Data Chunking",
-                    "Multithreading"
-                  ].map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-500/30 hover:scale-105 transition-transform"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Highlight Stats */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl">
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    90-95%
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Accuracy Achieved
-                  </div>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl">
-                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-                    4-5hrs
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Daily Time Saved
-                  </div>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl">
-                  <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                    15K+
-                  </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Rows processed using data chunking
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 rounded-full filter blur-3xl -z-10"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/10 to-pink-500/10 rounded-full filter blur-3xl -z-10"></div>
           </motion.div>
-
-          {/* Certificate Badge */}
-          <motion.div variants={itemVariants} className="mt-8 text-center">
-            <a
-              href="/intern_certificate.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <FaAward className="w-5 h-5" />
-              View Certificate
-            </a>
-          </motion.div>
-        </motion.div>
+        </AnimatePresence>
       </div>
-    </section>
+    </Section>
   );
-};
-
-export default Experience;
+}

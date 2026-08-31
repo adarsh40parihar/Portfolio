@@ -1,158 +1,109 @@
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { FiExternalLink } from "react-icons/fi";
+import Section from "./Section";
+import { profile, education } from "../data/profile";
 
-const About = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.3 });
+/** Spec rows, laid out the way macOS's "About This Mac" panel does. */
+const specs = [
+  { k: "Institute", v: education.school },
+  { k: "Programme", v: education.degree },
+  { k: "CGPA", v: education.cgpa },
+  { k: "Graduating", v: education.graduation },
+  { k: "Based in", v: profile.location },
+  { k: "Focus", v: "Agentic AI · Backend · Cloud infrastructure" },
+];
+
+export default function About() {
   const [imgError, setImgError] = useState(false);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const imageRef = useRef(null);
-
-  const handleMouseMove = (e) => {
-    if (!imageRef.current) return;
-    const rect = imageRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -10; // -10 to 10 degrees
-    const rotateY = ((x - centerX) / centerX) * 10; // -10 to 10 degrees
-    setTilt({ x: rotateX, y: rotateY });
-  };
-
-  const handleMouseLeave = () => {
-    setTilt({ x: 0, y: 0 });
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
-  };
 
   return (
-    <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 relative z-10">
-      <div className="container mx-auto max-w-6xl">
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-center mb-16"
-          >
-            About <span className="gradient-text">Me</span>
-          </motion.h2>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div variants={itemVariants} className="order-2 md:order-1">
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                  I'm a <span className="font-semibold text-cyan-600 dark:text-cyan-400">
-                    B.Tech graduate
-                  </span>{" "}
-                  from <span className="font-semibold">IIT (ISM) Dhanbad</span> (May 2026) and a passionate{" "}
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">
-                    Software Engineer
-                  </span>{" "}
-                  who loves building secure, scalable applications that solve
-                  real-world problems.
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                  I specialize in{" "}
-                  <span className="font-semibold">Full-Stack Development</span>,{" "}
-                  <span className="font-semibold text-cyan-600 dark:text-cyan-400">
-                    AI/ML Systems
-                  </span>
-                  , and{" "}
-                  <span className="font-semibold">Cloud Technologies</span>. My
-                  passion lies in creating innovative solutions that bridge
-                  technology and real-world impact.
-                </p>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  When I'm not coding, you'll find me organizing{" "}
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">
-                    CTF competitions
-                  </span>
-                  , solving{" "}
-                  <span className="font-semibold">competitive programming</span>{" "}
-                  challenges, or contributing to the cybersecurity community.
-                </p>
+    <Section
+      id="about"
+      index="01"
+      label="About"
+      title="About This Developer"
+      meta="~/about"
+    >
+      <div className="grid gap-10 md:grid-cols-[220px_1fr] md:gap-12">
+        {/* Portrait */}
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative h-[168px] w-[168px] overflow-hidden rounded-2xl border border-line-strong bg-surface-2">
+            {!imgError ? (
+              <img
+                src="/profile.jpg"
+                alt={profile.name}
+                loading="lazy"
+                onError={() => setImgError(true)}
+                className="h-full w-full object-cover grayscale transition-all duration-500 hover:grayscale-0"
+              />
+            ) : (
+              <div className="grid h-full w-full place-items-center font-mono text-4xl text-ink-faint">
+                ASP
               </div>
-
-              <div className="grid grid-cols-3 gap-4 mt-8">
-                <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform">
-                  <div className="text-3xl font-bold gradient-text">1300+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Problems Solved (DSA & CP)
-                  </div>
-                </div>
-                <div className="text-center p-4 bg-white/50 dark:bg-navy-800/50 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform">
-                  <div className="text-3xl font-bold gradient-text">8.13</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    CGPA
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={itemVariants}
-              className="order-1 md:order-2 flex justify-center"
-            >
-              <div
-                ref={imageRef}
-                className="relative cursor-pointer"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-                style={{
-                  transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-                  transition: "transform 0.1s ease-out",
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl blur-xl opacity-50 animate-glow"></div>
-                <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 p-1">
-                  <div className="w-full h-full rounded-2xl bg-navy-800 flex items-center justify-center">
-                    {/* Profile image: drop your real photo as /public/profile.jpg.
-                        If the image fails to load, we fall back to the emoji. */}
-                    {!imgError ? (
-                      <img
-                        src="/profile.jpg"
-                        alt="Adarsh — profile"
-                        className="w-full h-full object-cover rounded-2xl"
-                        onError={() => setImgError(true)}
-                      />
-                    ) : (
-                      <div className="text-8xl">👨‍💻</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            )}
           </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
+          <div className="text-center">
+            <p className="text-sm font-medium">{profile.name}</p>
+            <p className="mt-0.5 font-mono text-2xs text-ink-faint">
+              {profile.role}
+            </p>
+          </div>
+        </div>
 
-export default About;
+        {/* Prose + spec sheet */}
+        <div>
+          <div className="space-y-4 leading-relaxed text-ink-dim">
+            <p>
+              I&apos;m a final-year B.Tech student at{" "}
+              <span className="text-ink">IIT (ISM) Dhanbad</span> who ended up
+              writing far more software than mechanics. Most of my work sits
+              where <span className="text-ink">LLM agents</span> meet real
+              backend systems — orchestration graphs, event pipelines, and the
+              unglamorous plumbing that makes them reproducible.
+            </p>
+            <p>
+              At <span className="text-ink">Goldman Sachs</span> I built a
+              multi-agent platform that replaced hours of daily manual work; at{" "}
+              <span className="text-ink">GetSpike AI</span> I&apos;m automating
+              content generation end to end on AWS. Outside work I compete —{" "}
+              <span className="text-ink">1300+ problems</span> solved — and help
+              run <span className="text-ink">PearlCTF</span>, a CTF with a few
+              thousand global players.
+            </p>
+          </div>
+
+          <div className="mt-8 overflow-hidden rounded-lg border border-line">
+            {specs.map((s, idx) => (
+              <div
+                key={s.k}
+                className={`grid grid-cols-[110px_1fr] gap-4 px-4 py-2.5 text-[13px] sm:grid-cols-[128px_1fr] ${
+                  idx % 2 ? "bg-surface-2/60" : ""
+                }`}
+              >
+                <span className="font-mono text-2xs uppercase tracking-label text-ink-faint">
+                  {s.k}
+                </span>
+                <span className="text-ink-dim">{s.v}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="/resume" className="btn-ghost h-9 text-[13px]">
+              More info…
+            </a>
+            <a
+              href={profile.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost h-9 text-[13px]"
+            >
+              GitHub
+              <FiExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}

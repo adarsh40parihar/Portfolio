@@ -1,112 +1,171 @@
-import { motion } from "framer-motion";
-import { FaFileDownload, FaEnvelope } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+import { FiArrowRight, FiFileText, FiArrowDown } from "react-icons/fi";
+import { profile, bootLines } from "../data/profile";
 
-const Hero = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
-    },
-  };
+/** Types each command out, reveals its output, then moves to the next line. */
+function useBootSequence(lines) {
+  const reduced = useReducedMotion();
+  const [step, setStep] = useState({ i: 0, c: 0, out: 0 });
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
-  };
+  useEffect(() => {
+    if (reduced) {
+      setStep({ i: lines.length, c: 0, out: 0 });
+      return;
+    }
+    const { i, c, out } = step;
+    if (i >= lines.length) return;
+
+    const line = lines[i];
+    let delay;
+    let next;
+
+    if (c < line.cmd.length) {
+      delay = 34;
+      next = { i, c: c + 1, out: 0 };
+    } else if (out < line.out.length) {
+      delay = 110;
+      next = { i, c, out: out + 1 };
+    } else {
+      delay = 420;
+      next = { i: i + 1, c: 0, out: 0 };
+    }
+
+    const t = setTimeout(() => setStep(next), delay);
+    return () => clearTimeout(t);
+  }, [step, lines, reduced]);
+
+  return { ...step, done: step.i >= lines.length };
+}
+
+const Prompt = () => (
+  <span className="select-none">
+    <span className="text-tl-green">➜</span>{" "}
+    <span className="text-ink-faint">~</span>{" "}
+  </span>
+);
+
+export default function Hero() {
+  const { i, c, out, done } = useBootSequence(bootLines);
 
   return (
-      <section
-          id="home"
-          className="relative min-h-screen flex items-center justify-center pt-16 px-4 sm:px-6 lg:px-8 overflow-hidden"
+    <section
+      id="home"
+      className="relative flex min-h-[100svh] items-center px-4 pb-20 pt-[calc(var(--menubar-h)+3rem)] sm:px-6 lg:px-8"
+    >
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        {/* ---------- Identity ---------- */}
+        <div className="animate-fade-up">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-2 py-1 pl-2 pr-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-tl-green animate-pulse-dot" />
+            <span className="font-mono text-[11px] text-ink-dim">
+              {profile.status.label}
+            </span>
+          </span>
+
+          <h1 className="mt-6 text-balance text-[clamp(2.4rem,7.2vw,4.6rem)] font-medium leading-[0.98] tracking-[-0.045em]">
+            {profile.name}
+          </h1>
+
+          <p className="mt-4 font-mono text-[13px] text-ink-mute sm:text-sm">
+            {profile.roles.map((r, idx) => (
+              <span key={r}>
+                {idx > 0 && <span className="mx-2 text-ink-faint">/</span>}
+                {r}
+              </span>
+            ))}
+          </p>
+
+          <p className="mt-6 max-w-xl text-balance leading-relaxed text-ink-dim">
+            {profile.summary}
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <a href="/resume" className="btn-primary">
+              <FiFileText className="h-4 w-4" />
+              View résumé
+            </a>
+            <a href="#contact" className="btn-ghost">
+              Get in touch
+              <FiArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+
+          <p className="mt-6 hidden items-center gap-2 font-mono text-2xs text-ink-faint sm:flex">
+            <span className="kbd">⌘</span>
+            <span className="kbd">K</span>
+            to search this site
+          </p>
+        </div>
+
+        {/* ---------- Terminal ---------- */}
+        <div
+          className="win animate-fade-up"
+          style={{ animationDelay: "120ms" }}
+        >
+          <div className="win-bar">
+            <div className="tl-group">
+              <span className="tl-btn tl-red" />
+              <span className="tl-btn tl-yellow" />
+              <span className="tl-btn tl-green" />
+            </div>
+            <span className="win-title mx-auto -translate-x-6 font-mono text-[11.5px]">
+              {profile.user}@{profile.host} — zsh
+            </span>
+          </div>
+
+          <div className="min-h-[300px] bg-[#060606] p-5 font-mono text-[12.5px] leading-[1.85] sm:min-h-[340px] sm:text-[13px]">
+            {bootLines.map((line, idx) => {
+              if (idx > i) return null;
+              const typed = idx < i ? line.cmd : line.cmd.slice(0, c);
+              const shown = idx < i ? line.out : line.out.slice(0, out);
+
+              return (
+                <div key={line.cmd} className={idx > 0 ? "mt-4" : ""}>
+                  <div className="text-ink">
+                    <Prompt />
+                    {typed}
+                    {idx === i && c < line.cmd.length && (
+                      <span className="ml-px inline-block h-[1.05em] w-[7px] translate-y-[2px] bg-ink animate-caret" />
+                    )}
+                  </div>
+                  {shown.map((o) => (
+                    <div key={o} className="text-ink-mute">
+                      {o}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+
+            {done && (
+              <div className="mt-4 text-ink">
+                <Prompt />
+                <span className="ml-px inline-block h-[1.05em] w-[7px] translate-y-[2px] bg-ink animate-caret" />
+              </div>
+            )}
+          </div>
+
+          {/* Status bar, like a terminal's bottom strip */}
+          <div className="flex items-center justify-between border-t border-line bg-surface-2 px-4 py-2 font-mono text-2xs text-ink-faint">
+            <span>{profile.location}</span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-tl-green" />
+              connected
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll affordance */}
+      <a
+        href="#about"
+        aria-label="Scroll to about"
+        className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-2xs text-ink-faint transition-colors hover:text-ink-dim md:flex"
       >
-          <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="container mx-auto text-center z-10"
-          >
-              <motion.div variants={itemVariants} className="mb-6">
-                  <span className="text-4xl md:text-6xl mb-4 block">👋</span>
-                  <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4">
-                      Hey, I'm <span className="gradient-text">Adarsh</span>
-                  </h1>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="mb-8">
-                  <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Software Engineer | Full-Stack Developer | Problem Solver
-                  </p>
-                  <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                      Turning ideas into secure, scalable systems.
-                  </p>
-              </motion.div>
-
-              <motion.div
-                  variants={itemVariants}
-                  className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              >
-                  <motion.a
-                      href="/resume"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-                  >
-                      <FaFileDownload className="w-5 h-5" />
-                      View Resume
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur"></div>
-                  </motion.a>
-
-                  <motion.a
-                      href="#contact"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-8 py-4 bg-transparent border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-cyan-400 font-semibold rounded-2xl shadow-lg hover:bg-cyan-500 hover:text-white dark:hover:bg-cyan-400 dark:hover:text-navy-900 transition-all duration-300 flex items-center gap-2"
-                  >
-                      <FaEnvelope className="w-5 h-5" />
-                      Contact Me
-                  </motion.a>
-              </motion.div>
-
-              {/* Animated scroll indicator */}
-              <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.5 }}
-                  className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
-              >
-                  <motion.div
-                      animate={{ y: [0, 10, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.5 }}
-                      className="w-6 h-10 border-2 border-cyan-500 dark:border-cyan-400 rounded-full flex justify-center"
-                  >
-                      <motion.div
-                          animate={{ y: [0, 12, 0] }}
-                          transition={{ repeat: Infinity, duration: 1.5 }}
-                          className="w-1.5 h-3 bg-cyan-500 dark:bg-cyan-400 rounded-full mt-2"
-                      />
-                  </motion.div>
-              </motion.div>
-          </motion.div>
-
-          {/* Animated gradient orbs */}
-          <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
-          <div
-              className="absolute bottom-20 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"
-              style={{ animationDelay: "1s" }}
-          ></div>
-      </section>
+        <FiArrowDown className="h-3 w-3 animate-bounce" />
+        scroll
+      </a>
+    </section>
   );
-};
-
-export default Hero;
+}

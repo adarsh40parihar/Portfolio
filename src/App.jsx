@@ -1,68 +1,114 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+
+import MenuBar from "./components/MenuBar";
+import Dock from "./components/Dock";
+import Spotlight from "./components/Spotlight";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Experience from "./components/Experience";
-import Skills from "./components/Skills";
-import CodingProfiles from "./components/CodingProfiles";
 import Projects from "./components/Projects";
+import Skills from "./components/Skills";
+import Arena from "./components/Arena";
 import Achievements from "./components/Achievements";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import ParticlesBackground from "./components/ParticlesBackground";
 import Resume from "./components/Resume";
 
-function App() {
-  const [darkMode, setDarkMode] = useState(true);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-
+/** Soft light that trails the cursor — desktop pointers only. */
+function useCursorGlow() {
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+    let frame = 0;
+    const onMove = (e) => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const root = document.documentElement;
+        root.style.setProperty("--mx", `${e.clientX}px`);
+        root.style.setProperty("--my", `${e.clientY}px`);
+      });
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+}
+
+function Desktop() {
+  const [spotlightOpen, setSpotlightOpen] = useState(false);
+  useCursorGlow();
+
+  // ⌘K / Ctrl+K opens the palette; "/" works too when nothing is focused.
+  useEffect(() => {
+    const onKey = (e) => {
+      const typing = ["INPUT", "TEXTAREA"].includes(
+        document.activeElement?.tagName
+      );
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSpotlightOpen((o) => !o);
+      } else if (e.key === "/" && !typing && !spotlightOpen) {
+        e.preventDefault();
+        setSpotlightOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [spotlightOpen]);
 
   return (
-    <BrowserRouter>
-      <div className={`${darkMode ? "dark" : ""}`}>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-navy-950 dark:via-navy-900 dark:to-navy-800 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-          <Routes>
-            {/* Resume Route */}
-            <Route path="/resume" element={<Resume />} />
+    <>
+      {/* --- Backdrop layers --- */}
+      <div
+        aria-hidden="true"
+        className="bg-grid pointer-events-none fixed inset-0 z-0 [mask-image:radial-gradient(ellipse_at_50%_0%,black,transparent_78%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 opacity-70"
+        style={{
+          background:
+            "radial-gradient(600px circle at var(--mx, 50%) var(--my, 0px), rgba(255,255,255,0.045), transparent 65%)",
+        }}
+      />
 
-            {/* Main Portfolio Route */}
-            <Route
-              path="/"
-              element={
-                <>
-                  <ParticlesBackground />
-                  {!isLightboxOpen && (
-                    <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-                  )}
-                  <Hero />
-                  <About />
-                  <Experience />
-                  <Skills />
-                  <CodingProfiles />
-                  <Projects onLightboxChange={setIsLightboxOpen} />
-                  <Achievements />
-                  <Contact />
-                  <Footer />
-                </>
-              }
-            />
-          </Routes>
-        </div>
+      <div className="relative z-10">
+        <MenuBar onOpenSpotlight={() => setSpotlightOpen(true)} />
+        <main>
+          <Hero />
+          <About />
+          <Experience />
+          <Projects />
+          <Skills />
+          <Arena />
+          <Achievements />
+          <Contact />
+        </main>
+        <Footer />
+        <Dock />
       </div>
-    </BrowserRouter>
+
+      <Spotlight
+        open={spotlightOpen}
+        onClose={() => setSpotlightOpen(false)}
+      />
+    </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/resume" element={<Resume />} />
+        <Route path="*" element={<Desktop />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
